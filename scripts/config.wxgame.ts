@@ -12,7 +12,7 @@ const config: ResourceManagerConfig = {
     buildConfig: (params) => {
 
         const { target, command, projectName, version } = params;
-        const outputDir = `../BrainRace_wxgame/Open`;
+        const outputDir = `../BrainRace_wxgame/open`;
         if (command == 'build') {
             return {
                 outputDir,

@@ -59,10 +59,6 @@ var Main = (function (_super) {
             _this.panel_01._setBitmapData(imageLoader.data);
         }, this);
         imageLoader1.load("resource/assets/panel_bg.png");
-        //测试点击
-        this.addEventListener(egret.TouchEvent.TOUCH_TAP, function (evt) {
-            console.log('子域输出点击');
-        }, this);
     };
     Main.prototype.processData = function (data) {
         wx.getUserCloudStorage({
