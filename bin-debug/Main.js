@@ -64,7 +64,10 @@ var Main = (function (_super) {
         wx.getUserCloudStorage({
             keyList: ['score'],
             success: function (res) {
-                var retScore = res.KVDataList[0].value;
+                var retScore = 0;
+                if (res.KVDataList != null && res.KVDataList.length > 0) {
+                    retScore = res.KVDataList[0].value;
+                }
                 var oldScore = new Number(retScore);
                 var newScore = new Number(data.score);
                 var strScore = new String(data.score);

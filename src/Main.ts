@@ -64,7 +64,10 @@ class Main extends egret.DisplayObjectContainer {
         wx.getUserCloudStorage({
             keyList: ['score'],
             success: res => {
-                let retScore = res.KVDataList[0].value;
+                let retScore = 0;
+                if (res.KVDataList != null && res.KVDataList.length > 0) {
+                    retScore = res.KVDataList[0].value;
+                }
                 let oldScore: Number = new Number(retScore);
                 let newScore: Number = new Number(data.score);
                 let strScore: String = new String(data.score);
