@@ -130,12 +130,12 @@ class Main extends egret.DisplayObjectContainer {
                 listContainer.addChild(item);
 
                 let bitmap = new egret.Bitmap(this.bgtexture);
-                bitmap.width = 460;
+                bitmap.width = this.scrollView.width;
                 item.addChild(bitmap);
 
                 let nicktxt = new egret.TextField();
                 nicktxt.y = 50;
-                nicktxt.text = '名字:' + value.nickname;
+                nicktxt.text = ' 名字:' + value.nickname;
                 item.addChild(nicktxt);
 
                 let numtxt = new egret.TextField();
