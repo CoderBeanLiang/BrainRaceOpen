@@ -18,7 +18,8 @@ class Main extends egret.DisplayObjectContainer {
         });
     }
 
-    private readonly scrollView = new egret.ScrollView();
+    private scrollView: egret.ScrollView;
+    private bitmapView: egret.Bitmap;
     private bgtexture: egret.Texture;
     private panel_01: egret.Texture;
 
@@ -101,17 +102,22 @@ class Main extends egret.DisplayObjectContainer {
     }
 
     private runGame() {
-        let bitmap = new egret.Bitmap(this.panel_01);
-        bitmap.x = (640 - 480) >> 1;
-        bitmap.y = (1136 - 800) >> 1;
-        this.addChild(bitmap);
+        if (this.contains(this.bitmapView)) { this.removeChild(this.bitmapView); }
+        if (this.contains(this.scrollView)) { this.removeChild(this.scrollView); }
 
+
+        this.bitmapView = new egret.Bitmap(this.panel_01);
+        this.bitmapView.x = (640 - 480) >> 1;
+        this.bitmapView.y = (1136 - 800) >> 1;
+        this.addChild(this.bitmapView);
+
+        this.scrollView = new egret.ScrollView();
         const listContainer = new egret.DisplayObjectContainer();
         this.scrollView.setContent(listContainer);
-        this.scrollView.x = bitmap.x;
-        this.scrollView.y = bitmap.y;
-        this.scrollView.width = bitmap.width;
-        this.scrollView.height = bitmap.height;
+        this.scrollView.x = this.bitmapView.x;
+        this.scrollView.y = this.bitmapView.y;
+        this.scrollView.width = this.bitmapView.width;
+        this.scrollView.height = this.bitmapView.height;
         this.addChild(this.scrollView);
 
         this.gameData.forEach(
