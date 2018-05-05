@@ -120,6 +120,9 @@ class Main extends egret.DisplayObjectContainer {
         this.scrollView.height = this.bitmapView.height;
         this.addChild(this.scrollView);
 
+        this.gameData.sort(function(a,b){
+            return b.KVDataList[0].value - a.KVDataList[0].value;
+        });
         this.gameData.forEach(
             (value, index) => {
                 let item = new egret.DisplayObjectContainer();
