@@ -20,8 +20,7 @@ class Main extends egret.DisplayObjectContainer {
 
     private scrollView: egret.ScrollView;
     private bitmapView: egret.Bitmap;
-    private bgtexture: egret.Texture;
-    private panel_01: egret.Texture;
+    private panel_bg: egret.Texture;
 
     private processRank(data: any) {
         //获取小游戏开放数据接口 --- 开始
@@ -43,21 +42,30 @@ class Main extends egret.DisplayObjectContainer {
 
         //获取小游戏开放数据接口 --- 结束        
 
+        // let imageLoader = new egret.ImageLoader();
+        // imageLoader.addEventListener(egret.Event.COMPLETE, (event: egret.Event) => {
+        //     let imageLoader = <egret.ImageLoader>event.currentTarget;
+        //     this.bgtexture = new egret.Texture();
+        //     this.bgtexture._setBitmapData(imageLoader.data);
+        // }, this);
+        // imageLoader.load("resource/assets/panel_shop_01.png");
+
+        // let imageLoader1 = new egret.ImageLoader();
+        // imageLoader1.addEventListener(egret.Event.COMPLETE, (event: egret.Event) => {
+        //     let imageLoader = <egret.ImageLoader>event.currentTarget;
+        //     this.panel_01 = new egret.Texture();
+        //     this.panel_01._setBitmapData(imageLoader.data);
+        // }, this);
+        // imageLoader1.load("resource/assets/panel_bg.png");
+
+        // 加载排行榜背景
         let imageLoader = new egret.ImageLoader();
         imageLoader.addEventListener(egret.Event.COMPLETE, (event: egret.Event) => {
-            let imageLoader = <egret.ImageLoader>event.currentTarget;
-            this.bgtexture = new egret.Texture();
-            this.bgtexture._setBitmapData(imageLoader.data);
+            let loader = <egret.ImageLoader>event.currentTarget;
+            this.panel_bg = new egret.Texture();
+            this.panel_bg._setBitmapData(loader.data);
         }, this);
-        imageLoader.load("resource/assets/panel_shop_01.png");
-
-        let imageLoader1 = new egret.ImageLoader();
-        imageLoader1.addEventListener(egret.Event.COMPLETE, (event: egret.Event) => {
-            let imageLoader = <egret.ImageLoader>event.currentTarget;
-            this.panel_01 = new egret.Texture();
-            this.panel_01._setBitmapData(imageLoader.data);
-        }, this);
-        imageLoader1.load("resource/assets/panel_bg.png");
+        imageLoader.load("resource/assets/panel_bg.png");
 
     }
 
@@ -105,19 +113,18 @@ class Main extends egret.DisplayObjectContainer {
         if (this.contains(this.bitmapView)) { this.removeChild(this.bitmapView); }
         if (this.contains(this.scrollView)) { this.removeChild(this.scrollView); }
 
-
-        this.bitmapView = new egret.Bitmap(this.panel_01);
-        this.bitmapView.x = (640 - 480) >> 1;
-        this.bitmapView.y = (1136 - 800) >> 1;
+        this.bitmapView = new egret.Bitmap(this.panel_bg);
+        this.bitmapView.x = (this.stage.stageWidth - this.bitmapView.width) >> 1;
+        this.bitmapView.y = (this.stage.stageHeight - this.bitmapView.height) >> 1;
         this.addChild(this.bitmapView);
 
         this.scrollView = new egret.ScrollView();
         const listContainer = new egret.DisplayObjectContainer();
         this.scrollView.setContent(listContainer);
-        this.scrollView.x = this.bitmapView.x;
-        this.scrollView.y = this.bitmapView.y;
-        this.scrollView.width = this.bitmapView.width;
-        this.scrollView.height = this.bitmapView.height;
+        this.scrollView.x = this.bitmapView.x + 10;
+        this.scrollView.y = this.bitmapView.y + 10;
+        this.scrollView.width = this.bitmapView.width - 20;
+        this.scrollView.height = this.bitmapView.height - 20;
         this.addChild(this.scrollView);
 
         this.gameData.sort(function(a,b){
@@ -125,23 +132,60 @@ class Main extends egret.DisplayObjectContainer {
         });
         this.gameData.forEach(
             (value, index) => {
+
+                let itemH = 100;// 每个排行榜项高120
+                let itemW = 480;
+
                 let item = new egret.DisplayObjectContainer();
-                item.y = index * 130;
+                item.width = itemW;
+                item.height = itemH;
+                item.y = index * itemH;
                 listContainer.addChild(item);
 
-                let bitmap = new egret.Bitmap(this.bgtexture);
-                bitmap.width = this.scrollView.width;
-                item.addChild(bitmap);
+                // let itemBg = new egret.Shape();
+                // itemBg.graphics.beginFill(0x0000ff);
+                // itemBg.graphics.drawRect(0, 0, itemW, itemH - 1);
+                // itemBg.graphics.endFill();
+                // item.addChild(itemBg);
+
+                let num = index + 1;
+                let numText = new egret.TextField();
+                numText.textAlign = egret.HorizontalAlign.CENTER;
+                numText.verticalAlign = egret.VerticalAlign.MIDDLE;
+                numText.height = item.height;
+                numText.width = 80;
+                numText.text = num.toString();
+                numText.bold = true;
+                item.addChild(numText);
+
+                let imageLoader = new egret.ImageLoader;
+                imageLoader.once(egret.Event.COMPLETE, (event:egret.Event) => {
+                    let loader = <egret.ImageLoader>event.currentTarget;
+                    let texture = new egret.Texture();
+                    texture._setBitmapData(loader.data);
+                    let bmp = new egret.Bitmap(texture);
+                    bmp.width = bmp.height = 80;
+                    bmp.x = 80;
+                    bmp.y = 10;
+                    item.addChild(bmp);
+                }, this);
+                imageLoader.load(value.avatarUrl);
 
                 let nicktxt = new egret.TextField();
-                nicktxt.y = 50;
-                nicktxt.text = ' 名字:' + value.nickname;
+                nicktxt.width = 150;
+                nicktxt.height = itemH;
+                nicktxt.verticalAlign = egret.VerticalAlign.MIDDLE;
+                nicktxt.x = 170;
+                nicktxt.text = value.nickname;
                 item.addChild(nicktxt);
 
                 let numtxt = new egret.TextField();
-                numtxt.x = 260;
-                numtxt.y = 50;
-                numtxt.text = '得分:' + value.KVDataList[0].value;
+                numtxt.textAlign = egret.HorizontalAlign.RIGHT;
+                numtxt.verticalAlign = egret.VerticalAlign.MIDDLE;
+                numtxt.width = 160;
+                numtxt.height = itemH;
+                numtxt.x = 320;
+                numtxt.text = (value.KVDataList[0].value / 100).toFixed(2) + ' 米';
                 item.addChild(numtxt);
             }, this);
     }

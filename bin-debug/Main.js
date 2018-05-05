@@ -12,7 +12,6 @@ var Main = (function (_super) {
     __extends(Main, _super);
     function Main() {
         var _this = _super.call(this) || this;
-        _this.scrollView = new egret.ScrollView();
         wx.onMessage(function (data) {
             console.log(data);
             if (data.isDisplay) {
@@ -97,32 +96,49 @@ var Main = (function (_super) {
     };
     Main.prototype.runGame = function () {
         var _this = this;
-        var bitmap = new egret.Bitmap(this.panel_01);
-        bitmap.x = (640 - 480) >> 1;
-        bitmap.y = (1136 - 800) >> 1;
-        this.addChild(bitmap);
+        if (this.contains(this.bitmapView)) {
+            this.removeChild(this.bitmapView);
+        }
+        if (this.contains(this.scrollView)) {
+            this.removeChild(this.scrollView);
+        }
+        this.bitmapView = new egret.Bitmap(this.panel_01);
+        this.bitmapView.x = (640 - 480) >> 1;
+        this.bitmapView.y = (1136 - 800) >> 1;
+        this.addChild(this.bitmapView);
+        this.scrollView = new egret.ScrollView();
         var listContainer = new egret.DisplayObjectContainer();
         this.scrollView.setContent(listContainer);
-        this.scrollView.x = bitmap.x;
-        this.scrollView.y = bitmap.y;
-        this.scrollView.width = bitmap.width;
-        this.scrollView.height = bitmap.height;
+        this.scrollView.x = this.bitmapView.x;
+        this.scrollView.y = this.bitmapView.y;
+        this.scrollView.width = this.bitmapView.width;
+        this.scrollView.height = this.bitmapView.height;
         this.addChild(this.scrollView);
+        this.gameData.sort(function (a, b) {
+            return b.KVDataList[0].value - a.KVDataList[0].value;
+        });
         this.gameData.forEach(function (value, index) {
             var item = new egret.DisplayObjectContainer();
             item.y = index * 130;
             listContainer.addChild(item);
             var bitmap = new egret.Bitmap(_this.bgtexture);
-            bitmap.width = 460;
+            bitmap.width = _this.scrollView.width;
             item.addChild(bitmap);
+            var avatar = new egret.Bitmap();
+            avatar.height = bitmap.height;
+            avatar.width = avatar.height;
+            item.addChild(avatar);
+            var imageLoader = new egret.ImageLoader;
+            imageLoader.once(egret.Event.COMPLETE, _this.imageLoadHandler, avatar);
             var nicktxt = new egret.TextField();
+            nicktxt.x = avatar.width;
             nicktxt.y = 50;
-            nicktxt.text = '名字:' + value.nickname;
+            nicktxt.text = value.nickname;
             item.addChild(nicktxt);
             var numtxt = new egret.TextField();
             numtxt.x = 260;
             numtxt.y = 50;
-            numtxt.text = '得分:' + value.KVDataList[0].value;
+            numtxt.text = (value.KVDataList[0].value / 100).toFixed(2) + ' 米';
             item.addChild(numtxt);
         }, this);
     };
@@ -132,6 +148,11 @@ var Main = (function (_super) {
         }
         this.scrollView.removeContent();
         console.log('停止开放数据域');
+    };
+    Main.prototype.imageLoadHandler = function (evt, avatar) {
+        var loader = evt.currentTarget;
+        var bmpData = loader.data;
+        avatar.$setBitmapData(bmpData);
     };
     return Main;
 }(egret.DisplayObjectContainer));
